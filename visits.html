@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Visits</title>
+    <!-- Link to your CSS file if needed -->
+    <link rel="stylesheet" href="style/custom.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            max-width: 400px;
+            width: 100%;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Patient Visits</h1>
+
+    <!-- Vitals Section -->
+    <form id="vitalsForm">
+        <h2>Vitals Section</h2>
+        <label for="height">Height (cm):</label>
+        <input type="number" id="height" name="height" required>
+
+        <label for="weight">Weight (kg):</label>
+        <input type="number" id="weight" name="weight" required>
+
+        <button type="button" onclick="calculateBMI()">Calculate BMI</button>
+
+        <label for="bmi">BMI:</label>
+        <input type="text" id="bmi" name="bmi" readonly>
+    </form>
+
+    <!-- Section A (BMI <= 25) -->
+    <form id="sectionAForm" style="display: none;">
+        <h2>Section A</h2>
+        <!-- Additional clinical data for patients with BMI <= 25 -->
+        <label>General Good Health:</label>
+        <div>
+            <input type="radio" id="goodHealthYes" name="goodHealth" value="Yes">
+            <label for="goodHealthYes">Yes</label>
+
+            <input type="radio" id="goodHealthNo" name="goodHealth" value="No">
+            <label for="goodHealthNo">No</label>
+        </div>
+
+        <label>Ever Been on a Diet or Lost Weight:</label>
+        <div>
+            <input type="radio" id="dietYes" name="diet" value="Yes">
+            <label for="dietYes">Yes</label>
+
+            <input type="radio" id="dietNo" name="diet" value="No">
+            <label for="dietNo">No</label>
+        </div>
+
+        <label for="comments">Comments:</label>
+        <textarea id="comments" name="comments" rows="4" cols="50"></textarea>
+    </form>
+
+    <!-- Section B (BMI > 25) -->
+    <form id="sectionBForm" style="display: none;">
+        <h2>Section B</h2>
+        <!-- Additional clinical data for patients with BMI > 25 -->
+        <label>History of Chronic Illness:</label>
+        <div>
+            <input type="radio" id="chronicIllnessYes" name="chronicIllness" value="Yes">
+            <label for="chronicIllnessYes">Yes</label>
+
+            <input type="radio" id="chronicIllnessNo" name="chronicIllness" value="No">
+            <label for="chronicIllnessNo">No</label>
+        </div>
+
+        <label>Currently Taking Drugs:</label>
+        <div>
+            <input type="radio" id="takingDrugsYes" name="takingDrugs" value="Yes">
+            <label for="takingDrugsYes">Yes</label>
+
+            <input type="radio" id="takingDrugsNo" name="takingDrugs" value="No">
+            <label for="takingDrugsNo">No</label>
+        </div>
+
+        <label for="comment">Comments:</label>
+        <textarea id="comment" name="comments" rows="4" cols="50"></textarea>
+    </form>
+
+    <!-- Submit Button -->
+    <button type="submit" onclick="submitForms()">Submit All</button>
+
+    <script>
+        // JavaScript code from custom.js
+        function calculateBMI() {
+            var height = document.getElementById('height').value;
+            var weight = document.getElementById('weight').value;
+
+            if (height && weight) {
+                var bmi = weight / ((height / 100) * (height / 100));
+                document.getElementById('bmi').value = bmi.toFixed(2);
+
+                // Show Section A or Section B based on BMI
+                var sectionAForm = document.getElementById('sectionAForm');
+                var sectionBForm = document.getElementById('sectionBForm');
+
+                if (bmi <= 25) {
+                    sectionAForm.style.display = 'block';
+                    sectionBForm.style.display = 'none';
+                } else {
+                    sectionAForm.style.display = 'none';
+                    sectionBForm.style.display = 'block';
+                }
+            }
+        }
+
+        function submitForms() {
+            // Create a new form to submit all data
+            var combinedForm = document.createElement('form');
+            combinedForm.method = 'post';
+            combinedForm.action = 'scripts/patient-report.php';
+
+            // Append elements from each form to the new combined form
+            ['vitalsForm', 'sectionAForm', 'sectionBForm'].forEach(function(formId) {
+                var form = document.getElementById(formId);
+                Array.from(form.elements).forEach(function(element) {
+                    // Exclude buttons and elements with display none
+                    if (element.type !== 'button' && element.style.display !== 'none') {
+                        var clone = element.cloneNode(true);
+                        combinedForm.appendChild(clone);
+                    }
+                });
+            });
+
+            // Append the combined form to the body and submit it
+            document.body.appendChild(combinedForm);
+            combinedForm.submit();
+        }
+        
+    </script>
+</body>
+</html>

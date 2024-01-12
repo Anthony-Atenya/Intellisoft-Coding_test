@@ -1,0 +1,3 @@
+# Ignore specific files
+scripts/config.php
+scripts/database.php
